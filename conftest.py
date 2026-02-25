@@ -18,4 +18,27 @@ def api_request_context():
         yield request_context
         request_context.dispose()
 
+# USER1 JWT 토큰 발급
+@pytest.fixture(scope="session")
+def auth_tokens_user1(api_request_context):
+    response = api_request_context.post(
+        "/users/login",
+        data={"email": TEST_USER_EMAIL, "password": TEST_USER2_PASSWORD}
+    )
+    assert response.status == 200, "USER1 로그인 실패 - .env 파일에서 계정 정보 확인"
+    access_token = response.headers.get("accesstoken")
+    refresh_token = response.headers.get("refreshtoken")
+    return {"access_token:":access_token, "refresh_token":refresh_token}
+
+# USER2 JWT 토큰 발급
+@pytest.fixture(scope="session")
+def auth_tokens_user2(api_request_context):
+    response = api_request_context.post(
+        "/users/login",
+        data={"email":TEST_USER2_EMAIL, "password":TEST_USER2_PASSWORD}
+    )
+    assert response.status == 200, "USER2 로그인 실패 - .env 파일에서 계정 정보 확인"
+    access_token = response.headers.get("accesstoken")
+    refresh_token = response.headers.get("refreshtoken")
+    return {"access_token":access_token, "refresh_token": refresh_token}
 
