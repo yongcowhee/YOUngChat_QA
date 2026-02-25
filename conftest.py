@@ -1,6 +1,9 @@
 import pytest
 import os
 from playwright.sync_api import sync_playwright, APIRequestContext
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_URL = os.getenv("BASE_URL")
 FRONT_URL = os.getenv("FRONT_URL")
@@ -41,4 +44,6 @@ def auth_tokens_user2(api_request_context):
     access_token = response.headers.get("accesstoken")
     refresh_token = response.headers.get("refreshtoken")
     return {"access_token":access_token, "refresh_token": refresh_token}
+
+#
 
