@@ -16,3 +16,6 @@ node_modules/
 *.json
 pytest.ini
 playwright.yml
+
+# macOS 자동 생성 파일
+.DS_Store
