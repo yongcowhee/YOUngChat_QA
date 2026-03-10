@@ -4,3 +4,15 @@ __pycache__/
 .pytest_cache/
 test-results/
 playwright-report/
+
+# Playwright
+node_modules/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# 설정 파일
+*.json
+pytest.ini
+playwright.yml
