@@ -1,6 +1,6 @@
 import pytest
 import os
-from playwright.sync_api import sync_playwright, APIRequestContext
+from playwright.sync_api import APIRequestContext
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,18 +14,18 @@ TEST_USER2_EMAIL = os.getenv("TEST_USER2_EMAIL")
 TEST_USER2_PASSWORD = os.getenv("TEST_USER2_PASSWORD")
 
 # 인증 없이 사용할 수 있는 API context (로그인, 회원가입용)
+# playwright fixture를 인자로 받아서 사용 (sync_playwright 직접 호출 시 asyncio 충돌 발생)
 @pytest.fixture(scope="session")
-def api_request_context():
-    with sync_playwright() as p:
-        request_context = p.request.new_context(base_url=BASE_URL)
-        yield request_context
-        request_context.dispose()
+def api_request_context(playwright):
+    request_context = playwright.request.new_context(base_url=BASE_URL)
+    yield request_context
+    request_context.dispose()
 
 # USER1 JWT 토큰 발급
 @pytest.fixture(scope="session")
 def auth_tokens_user1(api_request_context):
     response = api_request_context.post(
-        "/users/login",
+        "users/login",
         data={"email": TEST_USER_EMAIL, "password": TEST_USER_PASSWORD}
     )
     assert response.status == 200, "USER1 로그인 실패 - .env 파일에서 계정 정보 확인"
@@ -37,7 +37,7 @@ def auth_tokens_user1(api_request_context):
 @pytest.fixture(scope="session")
 def auth_tokens_user2(api_request_context):
     response = api_request_context.post(
-        "/users/login",
+        "users/login",
         data={"email":TEST_USER2_EMAIL, "password":TEST_USER2_PASSWORD}
     )
     assert response.status == 200, "USER2 로그인 실패 - .env 파일에서 계정 정보 확인"
@@ -72,12 +72,12 @@ def user2_api(playwright, auth_tokens_user2):
 @pytest.fixture(scope="session")
 def setup_chat(user1_api, user2_api):
     # user2의 userId 조회
-    res = user2_api.get("/users/profile")
+    res = user2_api.get("users/profile")
     assert res.status == 200, "user2 프로필 조회 실패"
     user2_id = res.json()["data"]["userId"]
 
     # user1 -> user2 친구 추가 (이미 친구면 409 무시)
-    friend_res = user1_api.post(f"/friends/{user2_id}")
+    friend_res = user1_api.post(f"friends/{user2_id}")
     assert friend_res.status in [200, 409], "친구 추가 실패"
 
     # user1 기준으로 user2와 개인 채팅방 생성 (이미 있으면 기존 채팅방 반환)
