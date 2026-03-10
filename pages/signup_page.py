@@ -12,3 +12,8 @@ class SignupPage(BasePage):
         self.confirm_email_button = page.get_by_role("button", name="확인")
 
         self.confirm_signup_button = page.get_by_role("button", name="Sign Up")
+
+    def fill_signup_field(self, user_name:str, email:str, pw:str):
+        self.input_username.fill(user_name)
+        self.input_email.fill(email)
+        self.input_pw.fill(pw)
