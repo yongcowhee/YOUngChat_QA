@@ -6,11 +6,14 @@ class LoginPage(BasePage):
         self.input_email = page.locator("#email")
         self.input_pw = page.locator("#password")
         self.login_button = page.get_by_role("button",name = "Login") # "버튼"이라는 역할과 그 위의 "Login" 텍스트로 요소 찾아냄
-        self.sign_up = page.get_by_text("회원가입")
+        self.signup_button = page.get_by_role("link", name="가입하신 적이 없으시나요? 회원가입")
 
     def navigate(self):
         return super().navigate("login")
     
+    def signup(self):
+        self.signup_button.click()
+        
     def login(self, email:str, pw:str):
         self.input_email.fill(email)
         self.input_pw.fill(pw)
