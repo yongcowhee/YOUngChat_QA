@@ -14,9 +14,11 @@ class MainPage(BasePage):
     def click_chat(self):
         self.chat_button.click()
 
-    def click_mypage(self):
+    def click_my_page(self):
         self.mypage_button.click()
 
     def click_logout(self):
-        self.wait_for_alert_and_accept()
         self.logout_button.click()
+
+    def verify_user_name(self, page, expect_username:str):
+        assert page.get_by_text(f"{expect_username} 님")
