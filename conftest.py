@@ -8,8 +8,11 @@ load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
 FRONT_URL = os.getenv("FRONT_URL")
 
+TEST_USER_NAME = os.getenv("TEST_USER_NAME")
 TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL")
 TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
+
+TEST_USER2_NAME = os.getenv("TEST_USER2_NAME")
 TEST_USER2_EMAIL = os.getenv("TEST_USER2_EMAIL")
 TEST_USER2_PASSWORD = os.getenv("TEST_USER2_PASSWORD")
 
@@ -66,6 +69,14 @@ def user2_api(playwright, auth_tokens_user2):
     )
     yield context
     context.dispose()
+
+
+@pytest.fixture
+def setup(browser):
+    context = browser.new_context()
+    page = context.new_page()
+    yield page
+    context.close()
 
 
 # 테스트 시작 전 user1 -> user2 친구 추가 + 채팅방 생성
