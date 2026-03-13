@@ -1,8 +1,9 @@
-import time     # 시간 관련 함수 라이브러리 - 이메일 수신 대기에 사용
-import requests  # HTTP 요청 라이브러리 - Mailpit API 호출에 사용
-import re        # 정규표현식 라이브러리 - 메일 본문에서 인증코드 추출에 사용
+import requests   # HTTP 요청 라이브러리 - Mailpit API 호출에 사용
+import re         # 정규표현식 라이브러리 - Snippet에서 인증코드 추출에 사용
+import time       # 시간 관련 함수 라이브러리 - 폴링 대기에 사용
 
 from pages.base_page import BasePage
+from playwright.sync_api import expect  # Playwright 명시적 검증 라이브러리
 
 class SignupPage(BasePage):
     def __init__(self, page):
@@ -22,23 +23,37 @@ class SignupPage(BasePage):
         self.input_email.fill(email)
         self.input_pw.fill(pw)
 
-    def click_auth_email(self):
+    def send_auth_email(self):
         self.auth_email_button.click()
-        time.sleep(2)  # 메일이 Mailpit에 도달할 때까지 2초 대기
 
-    def get_email_auth_code(self, to_email: str):
-        res = requests.get("http://localhost:8025/api/v1/messages")
-        messages = res.json()["messages"]
+    def get_email_auth_code(self):
+        # 1. 루프 시작 전, 현재 Mailpit에 있는 가장 최신 메시지 ID를 가져옴
+        initial_res = requests.get("http://localhost:8025/api/v1/messages")
+        initial_messages = initial_res.json()["messages"]
+        last_known_id = initial_messages[0]["ID"] if initial_messages else None
 
-        assert len(messages) > 0, "❌ Mailpit에 수신된 메일이 없습니다. 이메일 발송이 됐는지 확인해주세요."
+        timeout = 10
+        interval = 1
 
-        latest_message = messages[0]
-        snippet = latest_message["Snippet"]  # "YOUngChat 인증 코드입니다. CODE : 75a2329b" 형태
+        for _ in range(timeout // interval):
+            res = requests.get("http://localhost:8025/api/v1/messages")
+            messages = res.json()["messages"]
 
-        print("📨 수신된 메시지 본문 : " ,snippet)
+            if messages:
+                latest_message = messages[0]
+                if latest_message["ID"] != last_known_id:
+                    snippet = latest_message["Snippet"]
+                    code = re.search(r'[a-f0-9]{8}', snippet).group()
+                    return code
 
-        code = re.search(r'[a-f0-9]{8}', snippet).group()
+            time.sleep(interval)
 
-        assert code is not None, "❌ 인증코드를 찾을 수 없습니다."
+        assert False, "❌ 신규 메일이 도착하지 않았습니다."
 
-        return code
+    def fill_and_click_auth_email_confirm(self, code):
+        self.input_email_verify_code.fill(code)
+        self.confirm_email_button.click()
+        expect(self.input_email).to_be_disabled()  # 이메일 input 비활성화 명시적 대기
+
+    def click_confirm_signup_button(self):
+        self.confirm_signup_button.click()
