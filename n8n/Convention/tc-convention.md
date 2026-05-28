@@ -20,13 +20,14 @@
 | No. | 필수 | 카테고리 내 일련번호. 카테고리 변경 시 1부터 재시작 |
 | Category | 필수 | 서비스 도메인 단위. 아래 3번 참고 |
 | Test Scenario | 필수 | 테스트 목적 및 상황. "~할 때 ~되는지 확인" 형태 |
-| Pre-condition | 필수 | 테스트 수행 전 충족되어야 할 전제 조건 |
+| Pre-condition | 필수 | 테스트 수행 전 충족되어야 할 전제 조건. 아래 4번 공통 Pre-condition 참고 |
 | Test Steps | 필수 | 테스트 수행 절차. 아래 4번 스텝 작성 규칙 준수 |
+| Additional Info | 선택 | 테스트 수행에 필요한 추가 정보. Test Steps에서 구체적 값을 분리하여 기재 |
 | Expected Results | 필수 | 테스트 수행 후 기대되는 결과 |
-| Test Results | 선택 | 실제 수행 결과. `PASS` / `FAIL` |
-| Test Method | 필수 | `Black-box` 또는 `White-box` |
+| Test Results | 선택 | 실제 수행 결과. `PASS` / `FAIL` / `O/S` |
+| Test Method | 필수 | `Black-box` / `White-box` / `Both` |
 | Automation | 필수 | `Y` 또는 `N`. 아래 6번 판단 기준 참고 |
-| Comments | 선택 | 비고, 특이사항, 관련 이슈 키 등 |
+| Comments | 선택 | 비고, 특이사항, 관련 이슈 키 등. `O/S` 처리 시 반드시 사유 기재 |
 
 ---
 
@@ -51,37 +52,38 @@ Google Sheets 탭과 Category 값은 아래 도메인을 기준으로 한다.
 
 ### 기본 형식
 
-- **동사 + 목적어** 형태로 작성한다.
-  - 좋음: `[Login] 버튼을 클릭한다`
-  - 나쁨: `로그인 버튼 클릭`
+- **명사형 (요소 + 동작)** 형태로 작성한다.
+  - 좋음: `[Login] 버튼 클릭`
+  - 나쁨: `로그인 버튼을 클릭한다`
 
 - UI 요소는 `[]`로 감싼다.
-  - 예) `[Login] 버튼`, `[Email Address] 입력 필드`, `[인증] 버튼`, `[확인] 버튼`
+  - 예) `[Login] 버튼`, `[Email Address] 입력`, `[인증] 버튼 클릭`, `[확인] 버튼 클릭`
 
-- 입력값은 구체적으로 명시한다.
-  - 예) `[Email Address] 입력 필드에 "test@youngchat.com"을 입력한다`
-  - 예) `[Password] 입력 필드에 유효하지 않은 형식의 값("password")을 입력한다`
+- Test Steps에는 구체적인 값을 명시하지 않는다. 값은 Additional Info에 분리 기재한다.
+  - Test Steps: `[Email Address] 임의의 이메일 입력`
+  - Additional Info: `테스트 이메일: test@youngchat.com`
 
 - 단계 번호는 1부터 순차적으로 작성한다. 분기가 있는 경우 `1-1`, `1-2` 형태로 기재한다.
 
-- API 레벨 스텝은 HTTP Method와 Endpoint를 명시한다. (White-box 전용)
-  - 예) `POST /api/v1/users/signup 요청을 전송한다 (body: { email, username, password })`
+- API 레벨 스텝은 HTTP Method와 Endpoint를 명시한다. (White-box / Both 전용)
+  - 예) `POST /api/v1/users/signup 요청 전송`
 
 ### 공통 Pre-condition
 
 아래 Pre-condition은 자주 사용되는 공통 조건이다. TC 작성 시 참조한다.
+Pre-condition은 명사형으로 작성한다.
 
 | ID | Pre-condition |
 |---|---|
-| PRE-001 | 앱이 실행된 상태이다 |
-| PRE-002 | 로그인된 상태이다 (AccessToken 쿠키가 유효한 상태) |
-| PRE-003 | 로그아웃된 상태이다 (AccessToken 쿠키가 없는 상태) |
-| PRE-004 | 이메일 인증이 완료된 상태이다 (인증 버튼 비활성화, 이메일 필드 disabled) |
-| PRE-005 | 테스트 계정 (test@youngchat.com) 이 가입된 상태이다 |
-| PRE-006 | 1:1 채팅방이 생성된 상태이다 |
-| PRE-007 | 그룹 채팅방이 생성된 상태이다 |
-| PRE-008 | 친구 관계가 맺어진 상태이다 |
-| PRE-009 | WebSocket 연결이 정상적으로 수립된 상태이다 |
+| PRE-001 | 웹이 실행된 상태 |
+| PRE-002 | 로그인된 상태 |
+| PRE-003 | 로그아웃된 상태 |
+| PRE-004 | 이메일 인증 완료 상태 |
+| PRE-005 | 기가입된 테스트 계정 존재 |
+| PRE-006 | 1:1 채팅방 존재 |
+| PRE-007 | 그룹 채팅방 존재 |
+| PRE-008 | 친구 관계 존재 |
+| PRE-009 | WebSocket 연결 수립 상태 |
 
 ---
 
@@ -127,13 +129,27 @@ Google Sheets 탭과 Category 값은 아래 도메인을 기준으로 한다.
 |---|---|
 | `Black-box` | UI 동작, API 응답, 사용자 시나리오 기반 검증. 내부 구현 무관 |
 | `White-box` | 서비스 로직, 예외 처리, 유효성 검사 루틴 기반 검증. 코드 분석 필요 |
+| `Both` | 동일 시나리오를 Black-box와 White-box 양쪽에서 검증. TC는 하나로 유지 |
 
-- 하나의 TC는 하나의 Test Method만 가진다.
-- 동일 시나리오를 Black-box와 White-box 양쪽에서 검증할 경우 TC를 분리하여 각각 작성한다.
+- 동일 시나리오를 Black-box와 White-box 양쪽에서 검증하는 경우 TC를 분리하지 않고 `Both`로 표기한다.
 
 ---
 
-## 8. Google Sheets 저장 규칙
+## 8. Test Results 처리 규칙
+
+| 값 | 의미 |
+|---|---|
+| `PASS` | 기대 결과와 실제 결과 일치 |
+| `FAIL` | 기대 결과와 실제 결과 불일치 |
+| `O/S` | 테스트 수행 불가 상태. 환경 미구성, 기능 미완성 등 |
+
+- `O/S` 처리 시 Comments에 수행 불가 사유를 반드시 기재한다.
+  - 예) `[O/S 사유] WebSocket 연결 환경 미구성`
+  - 예) `[O/S 사유] 해당 기능 개발 미완료 상태`
+
+---
+
+## 9. Google Sheets 저장 규칙
 
 ### 시트 구성
 
@@ -144,7 +160,8 @@ Google Sheets 탭과 Category 값은 아래 도메인을 기준으로 한다.
 
 ```
 Issue Key | No. | Category | Test Scenario | Pre-condition |
-Test Steps | Expected Results | Test Results | Test Method | Automation | Comments
+Test Steps | Additional Info | Expected Results | Test Results |
+Test Method | Automation | Comments
 ```
 
 - 컬럼 순서는 변경하지 않는다.
@@ -157,49 +174,9 @@ Test Steps | Expected Results | Test Results | Test Method | Automation | Commen
 
 ---
 
-## 9. TC 번호 부여 규칙
+## 10. TC 번호 부여 규칙
 
 - No.는 탭(도메인) 내에서 카테고리별로 1부터 시작한다.
 - 카테고리가 변경될 때마다 1부터 재시작한다.
 - 기존 TC 사이에 새로운 TC가 삽입될 경우 소수점 형태로 부여한다. (예: 3.1)
-
----
-
-## 10. 도메인별 주요 검증 포인트
-
-### 회원
-- 이메일 인증 완료 전 [Sign Up] 버튼 동작 여부
-- 이메일 인증 완료 후 이메일 필드 disabled 상태 전환
-- Username 유효성 검사 (영소문자/한글/숫자 2~10자)
-- Password 유효성 검사 (영소문자/숫자/특수문자 8~15자)
-- 회원가입 실패 시 alert 다중 출력 여부
-- 프로필 이미지 미첨부 시 기존 이미지 유지 여부
-- 비밀번호 변경 시 기존과 동일한 비밀번호 입력 예외
-
-### 인증
-- 로그인 성공 시 AccessToken/RefreshToken 쿠키 저장 확인
-- 로그인 실패 시 alert 메시지 노출
-- 로그인 페이지 진입 시 기존 토큰 자동 삭제
-- AccessToken 없는 상태에서 메인 접근 시 `/login` 리다이렉트
-
-### 채팅
-- 공백 메시지 전송 시도 시 차단 (trim() 처리)
-- 메시지 삭제 후 "삭제된 메세지입니다." 텍스트 표시
-- 본인 메시지에만 삭제 옵션 노출
-- 타 채팅방 메시지 수신 시 Snackbar 알림 3초 자동 닫힘
-- 현재 열람 중인 채팅방 메시지 수신 시 Snackbar 미노출
-- 무한 스크롤 역방향 페이지네이션 동작
-
-### 채팅방
-- 동일 상대와 1:1 채팅방 중복 생성 시 기존 채팅방 재사용
-- 친구 1명 선택 시 1:1 채팅방, 2명 이상 선택 시 그룹 채팅방 생성
-- 채팅방 목록에서 삭제된 마지막 메시지 "삭제된 메세지입니다." 표시
-- 채팅방 나가기 확인 다이얼로그 → 취소/나가기 분기 동작
-- 채팅방 멤버가 아닌 사용자의 접근 차단
-
-### 친구
-- 자기 자신 친구 추가 시도 시 예외
-- 이미 친구인 대상 재추가 시 예외
-- 친구 검색 키워드 입력 시 즉시 API 호출 (실시간 검색)
-- 채팅방 내 타 유저 아바타 클릭 → 친구 추가 플로우
-- 친구 삭제 후 목록 즉시 갱신
+- 매일 03:00 AM 스케줄링을 통해 소수점 번호를 자연수 형태로 자동 리넘버링한다. (1회 실행)
