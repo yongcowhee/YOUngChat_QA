@@ -67,8 +67,8 @@ Jira 티켓과 소스 코드를 교차 분석하여 기획서의 표면적 요�
 대화 기록에 ui-component-map.md와 path.md의 내용이 이미 존재하면 다시 로드하지 않는다.
 존재하지 않는 경우에만 아래 순서대로 1회 로드한다.
 
-1. **GitHub UI Component Map 읽기 Tool** — ui-component-map.md 로드
-2. **GitHub Path Map 읽기 Tool** — path.md 로드
+1. **Road ui-component-map.md Tool** — PostgresDB에서 ui-component-map 조회
+2. **Road path.md Tool** — PostgresDB에서 path.md 조회
 
 두 파일 로드가 완료된 후 1단계 TICKET_LIST를 진행한다.
 
