@@ -68,22 +68,30 @@
 - API 레벨 스텝은 HTTP Method와 Endpoint를 명시한다. (White-box / Both 전용)
   - 예) `POST /api/v1/users/signup 요청 전송`
 
-### 공통 Pre-condition
+### Pre-condition 작성 규칙
 
-아래 Pre-condition은 자주 사용되는 공통 조건이다. TC 작성 시 참조한다.
-Pre-condition은 명사형으로 작성한다.
+- Pre-condition은 명사형으로 작성한다.
+- ID 참조 방식(PRE-001 등)을 사용하지 않는다. 전체 내용을 번호 목록으로 직접 작성한다.
+- 예시:
+  ```
+  1. 웹이 실행된 상태
+  2. 로그아웃된 상태
+  3. 이메일 인증 완료 상태
+  ```
 
-| ID | Pre-condition |
-|---|---|
-| PRE-001 | 웹이 실행된 상태 |
-| PRE-002 | 로그인된 상태 |
-| PRE-003 | 로그아웃된 상태 |
-| PRE-004 | 이메일 인증 완료 상태 |
-| PRE-005 | 기가입된 테스트 계정 존재 |
-| PRE-006 | 1:1 채팅방 존재 |
-| PRE-007 | 그룹 채팅방 존재 |
-| PRE-008 | 친구 관계 존재 |
-| PRE-009 | WebSocket 연결 수립 상태 |
+자주 사용되는 공통 Pre-condition 참고 목록:
+
+| Pre-condition |
+|---|
+| 웹이 실행된 상태 |
+| 로그인된 상태 |
+| 로그아웃된 상태 |
+| 이메일 인증 완료 상태 |
+| 기가입된 테스트 계정 존재 |
+| 1:1 채팅방 존재 |
+| 그룹 채팅방 존재 |
+| 친구 관계 존재 |
+| WebSocket 연결 수립 상태 |
 
 ---
 
@@ -219,5 +227,5 @@ PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인
 
 | No. | Test Scenario | Pre-condition | Test Steps | Additional Info | Expected Results |
 |---|---|---|---|---|---|
-| 5 | PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인 | PRE-001, PRE-003, PRE-004 | 1. [PW] 대문자 포함 값 입력<br>2. [Sign Up] 버튼 클릭 | PW: Youngchat1! | 유효성 검사 실패 alert 노출, 가입 차단 |
-| 6 | PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인 | PRE-001, PRE-003, PRE-004 | 1. [PW] 지원하지 않는 특수문자 포함 값 입력<br>2. [Sign Up] 버튼 클릭 | PW: youngchat# | 유효성 검사 실패 alert 노출, 가입 차단 |
+| 5 | PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인 | 1. 웹이 실행된 상태<br>2. 로그아웃된 상태<br>3. 이메일 인증 완료 상태 | 1. [PW] 대문자 포함 값 입력<br>2. [Sign Up] 버튼 클릭 | PW: Youngchat1! | 유효성 검사 실패 alert 노출, 가입 차단 |
+| 6 | PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인 | 1. 웹이 실행된 상태<br>2. 로그아웃된 상태<br>3. 이메일 인증 완료 상태 | 1. [PW] 지원하지 않는 특수문자 포함 값 입력<br>2. [Sign Up] 버튼 클릭 | PW: youngchat# | 유효성 검사 실패 alert 노출, 가입 차단 |
