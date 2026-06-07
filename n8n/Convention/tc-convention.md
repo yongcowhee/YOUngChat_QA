@@ -33,15 +33,15 @@
 
 ## 3. Category 분류 기준
 
-Google Sheets 탭과 Category 값은 아래 도메인을 기준으로 한다.
+모든 TC는 단일 Google Sheets 시트에서 관리한다. Category 컬럼으로 도메인을 구분한다.
 
-| Google Sheets 탭 | Category 값 | 포함 기능 |
-|---|---|---|
-| `회원_TC` | 회원 | 회원가입, 이메일 인증, 프로필 조회/수정, 비밀번호 변경 |
-| `인증_TC` | 인증 | 로그인, 로그아웃, 토큰 만료 동작 |
-| `채팅_TC` | 채팅 | 메시지 전송/삭제, 실시간 수신, Snackbar 알림, 메시지 페이지네이션 |
-| `채팅방_TC` | 채팅방 | 1:1/그룹 채팅방 생성, 목록 조회, 상세 조회, 수정, 나가기 |
-| `친구_TC` | 친구 | 친구 추가(이메일/채팅방), 친구 삭제, 목록 조회, 친구 검색 |
+| Category 값 | 포함 기능 |
+|---|---|
+| 회원 | 회원가입, 이메일 인증, 프로필 조회/수정, 비밀번호 변경 |
+| 인증 | 로그인, 로그아웃, 토큰 만료 동작 |
+| 채팅 | 메시지 전송/삭제, 실시간 수신, Snackbar 알림, 메시지 페이지네이션 |
+| 채팅방 | 1:1/그룹 채팅방 생성, 목록 조회, 상세 조회, 수정, 나가기 |
+| 친구 | 친구 추가(이메일/채팅방), 친구 삭제, 목록 조회, 친구 검색 |
 
 - Category 값은 위 표의 값을 그대로 사용한다. 임의로 변경하지 않는다.
 - 하나의 TC가 복수의 도메인에 걸치는 경우, 주된 검증 대상 도메인을 기준으로 분류한다.
@@ -153,19 +153,20 @@ Pre-condition은 명사형으로 작성한다.
 
 ### 시트 구성
 
-- 탭은 도메인 단위로 구성한다: `회원_TC`, `인증_TC`, `채팅_TC`, `채팅방_TC`, `친구_TC`
-- 새로운 도메인이 추가되는 경우 동일한 네이밍 규칙(`{도메인명}_TC`)으로 탭을 생성한다.
+- 모든 TC는 단일 시트에서 관리한다.
+- 도메인 구분은 Category 컬럼으로 한다.
 
 ### 컬럼 순서 (고정)
 
 ```
 Issue Key | No. | Category | Test Scenario | Pre-condition |
-Test Steps | Additional Info | Expected Results | Test Results |
-Test Method | Automation | Comments
+Test Steps | Expected Results | Additional Info | Test Results |
+Comments | Test Method | Automation
 ```
 
 - 컬럼 순서는 변경하지 않는다.
 - `Issue Key` 컬럼 기준으로 필터링하면 티켓 단위 TC 조회가 가능하다.
+- `Category` 컬럼 기준으로 필터링하면 도메인 단위 TC 조회가 가능하다.
 
 ### 저장 시점
 
@@ -176,7 +177,47 @@ Test Method | Automation | Comments
 
 ## 10. TC 번호 부여 규칙
 
-- No.는 탭(도메인) 내에서 카테고리별로 1부터 시작한다.
-- 카테고리가 변경될 때마다 1부터 재시작한다.
-- 기존 TC 사이에 새로운 TC가 삽입될 경우 소수점 형태로 부여한다. (예: 3.1)
-- 매일 03:00 AM 스케줄링을 통해 소수점 번호를 자연수 형태로 자동 리넘버링한다. (1회 실행)
+- No.는 전체 시트에서 1부터 순차적으로 부여한다.
+- 기존 TC 사이에 새로운 TC가 삽입될 경우 소수점 형태로 부여한다. (예: 3.1) [백로그: 자동 리넘버링]
+
+---
+
+## 11. 시나리오 그룹화 규칙
+
+### 그룹화 기준
+
+**같은 시나리오의 판단 기준은 "검증하는 기능 동작"이다.**
+
+입력값, Test Steps의 구체적 값, Expected Results의 세부 메시지가 달라도 검증 목적이 같으면 같은 시나리오다.
+
+**같은 시나리오로 간주하는 경우:**
+- 동일한 기능 동작을 검증하며, Pre-condition 또는 입력값(Additional Info)만 다른 경우
+- Expected Results의 세부 메시지가 다르더라도 결과의 성격(차단됨 / alert 노출 / 성공 등)이 같은 경우
+
+예시:
+```
+PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인
+  → 대문자 입력: "PW에 대문자는 포함될 수 없습니다." alert
+  → 특수문자 입력: "#은 지원하지 않는 특수문자입니다." alert
+
+→ 검증 목적(유효성 검사 실패 시 가입 차단)이 같으므로 같은 시나리오
+```
+
+**다른 시나리오로 간주하는 경우:**
+- 검증하는 기능 동작 자체가 다른 경우 (성공 케이스 vs 실패 케이스)
+- 화면 흐름이 달라지는 경우 (페이지 이동 경로, 모달 노출 여부 등 분기)
+
+### 그룹화 방법
+
+- 같은 시나리오로 간주되는 TC들을 연속된 행으로 배치한다.
+- Test Scenario는 개별 케이스를 설명하지 않고 공통 검증 목적으로 추상화하여 작성한다.
+- Pre-condition, Test Steps, Additional Info, Comments는 행마다 구체적인 값을 각각 기재한다.
+
+[백로그: 같은 시나리오 그룹의 Issue Key / Category / Test Scenario / Expected Results / Test Method / Automation 셀 수직 병합]
+
+### 예시
+
+| No. | Test Scenario | Pre-condition | Test Steps | Additional Info | Expected Results |
+|---|---|---|---|---|---|
+| 5 | PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인 | PRE-001, PRE-003, PRE-004 | 1. [PW] 대문자 포함 값 입력<br>2. [Sign Up] 버튼 클릭 | PW: Youngchat1! | 유효성 검사 실패 alert 노출, 가입 차단 |
+| 6 | PW 유효성 검사 실패 시 alert 노출 및 가입 차단 확인 | PRE-001, PRE-003, PRE-004 | 1. [PW] 지원하지 않는 특수문자 포함 값 입력<br>2. [Sign Up] 버튼 클릭 | PW: youngchat# | 유효성 검사 실패 alert 노출, 가입 차단 |

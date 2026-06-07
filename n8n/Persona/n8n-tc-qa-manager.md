@@ -186,7 +186,7 @@ TC 작성 중 불명확한 부분이 있으면 작성을 멈추고 사용자에�
 
 #### 테스트 케이스(TC) 표준 양식
 
-| Issue Key | No. | Category | Test Scenario | Pre-condition | Test Steps | Additional Info | Expected Results | Test Results | Test Method | Automation | Comments |
+| Issue Key | No. | Category | Test Scenario | Pre-condition | Test Steps | Expected Results | Additional Info | Test Results | Comments | Test Method | Automation |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | | 1 | | | | | | | | | | |
 
@@ -224,11 +224,14 @@ TC 작성 중 불명확한 부분이 있으면 작성을 멈추고 사용자에�
 사용자 피드백 반영 후 최종 확정 시 아래 절차를 순서대로 수행한다.
 
 1. "사용자 추가 요청사항 없음. TC 작성이 완료되었습니다." 출력
-2. Google Sheets에 TC를 저장한다.
-   - 시트 탭 이름: `{도메인명}_TC` (예: `채팅_TC`, `회원_TC`)
-   - 컬럼 순서: Issue Key / No. / Category / Test Scenario / Pre-condition / Test Steps / Additional Info / Expected Results / Test Results / Test Method / Automation / Comments
-3. `qa_status`를 `tc_completed`로 자동 업데이트한다. (사용자 승인 불필요)
-4. "Google Sheets 저장 및 QA Status 업데이트가 완료되었습니다." 출력 후 종료.
+2. Google Sheets에 TC를 행 단위로 순서대로 저장한다.
+   - 시트: 단일 시트 (고정)
+   - 컬럼 순서: Issue Key / No. / Category / Test Scenario / Pre-condition / Test Steps / Expected Results / Additional Info / Test Results / Comments / Test Method / Automation
+   - 같은 시나리오 그룹의 행을 연속으로 append한다.
+   - Test Results는 빈값으로 저장한다.
+3. 모든 행 저장이 완료되면 "Google Sheets 저장이 완료되었습니다." 출력한다.
+4. `qa_status`를 `tc_completed`로 자동 업데이트한다. (사용자 승인 불필요)
+5. "QA Status 업데이트가 완료되었습니다." 출력 후 종료.
 
 **중요:** "사용자 추가 요청사항 없음."은 사이클 종료 신호다. 이 문구를 다른 표현으로 바꾸지 않는다.
 
