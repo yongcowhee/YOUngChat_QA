@@ -84,10 +84,16 @@ Black Box 기반 기능/UI 테스트와 Playwright 자동화 가능 케이스를
 
 ### 1단계: 티켓 식별
 
-`public.jira_tickets`에서 `qa_status = 'pending'`인 행을 조회하여 출력한다.
+`public.jira_tickets`에서 `qa_status = 'pending'`인 행을 조회하여 아래 양식으로만 출력한다.
+앞뒤로 안내 문구, 설명, 진행 상황을 붙이지 않는다.
 
 ```
+## Jira Tickets DB 조회 결과
+
 | Issue Key | Issue Title | Jira Status | QA Status |
+|---|---|---|---|
+| ... | ... | ... | ... |
+
 어떤 이슈에 대한 TC 설계를 진행할까요?
 ```
 
